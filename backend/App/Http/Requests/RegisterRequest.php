@@ -26,13 +26,7 @@ class RegisterRequest extends FormRequest
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
             'role' => 'required|in:admin,user','livreur', 
-            'telephone' => 'required|stringsize:10|unique:users,telephone',
-            'zoneTravail' => 'nullebal|string|max:255',
-            'disponibe' => 'nullebal|boolean',
-            'adresseRue' => 'nullebal|string|max:255',
-            'adressecodePostal' => 'nullebal|string|max:10',
-            'adresseville' => 'nullebal|string|max:100',
-            'adressepays' => 'nullebal|string|max:100',
+            'telephone' => 'required|stringsize:10|unique:users,telephone', 
         ];
     }
 }
