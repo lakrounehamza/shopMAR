@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('id_user')->constrained('users')->onDelete('cascade');
+            $table->string('adresseRue')->nullable();
+            $table->string('adresseVille')->nullable();
+            $table->string('adresseCode_postal')->nullable();
+            $table->string('adressePays')->nullable();
             $table->timestamps();
         });
     }
