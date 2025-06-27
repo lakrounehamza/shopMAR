@@ -25,8 +25,20 @@ class RegisterRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
-            'role' => 'required|in:admin,user','livreur', 
-            'telephone' => 'required|stringsize:10|unique:users,telephone', 
+            'role' => 'required|in:admin,user,livreur',
+            'telephone' => 'required|string|size:10|unique:users,telephone',
         ];
+          if ($this->role === 'client') {
+            $rules['adresseRue'] = 'required|string|max:255';
+            $rules['adresseVille'] = 'required|string|max:100';
+            $rules['adresseCode_postal'] = 'required|string|max:20';
+            $rules['adressePays'] = 'required|string|max:100';
+        }
+
+        // Champs spécifiques livreur
+        if ($this->role === 'livreur') {
+            $rules['zoneTravail'] = 'required|string|max:255';
+
+        }
     }
 }
