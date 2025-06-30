@@ -18,7 +18,12 @@ Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
 Route::post('clients', [ClientController::class, 'store']);
 Route::post('livreurs', [LivreurController::class, 'store']);
+Route::post('forgot', [AuthController::class, 'forgot']);
+Route::post('reset', [AuthController::class, 'reset']);
 
+Route::middleware([CheckRole::class  ])->group(function () {
+Route::post('logout', [AuthController::class, 'logout']);
+});
 Route::middleware([CheckRole::class . ':admin'])->group(function () {
     Route::get('categories', [CategoryController::class, 'index']);
     Route::get('categories/{id}', [CategoryController::class, 'show']);

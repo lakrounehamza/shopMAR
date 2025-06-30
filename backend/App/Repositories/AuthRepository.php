@@ -9,6 +9,8 @@ use App\Http\Requests\ForgotRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Client;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Log;
 use App\Models\Livreur;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -106,7 +108,66 @@ class AuthRepository  implements AuthRepositoryInterface
             }
         }
     }
-    public function forgot(ForgotRequest $attributes) {}
-    public function reset(Request $request) {}
+ public function forgot(ForgotRequest $request)
+    {
+        try {
+            $status = Password::sendResetLink($request->only('email'));
+
+            Log::channel('auth')->info('Password reset requested', [
+                'email' => $request->email,
+                'status' => $status
+            ]);
+
+            return response()->json([
+                'success' => $status === Password::RESET_LINK_SENT,
+                'message' => __($status),
+                'data' => [
+                    'email' => $request->email
+                ]
+            ], $status === Password::RESET_LINK_SENT ? 200 : 400);
+        } catch (\Exception $e) {
+            Log::error('Password reset request failed: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to process reset request'
+            ], 500);
+        }
+    }
+
+    public function reset(Request $request)
+    {
+        try {
+            $request->validate([
+                'token' => 'required',
+                'email' => 'required|email',
+                'password' => 'required|confirmed|min:8',
+            ]);
+
+            $status = Password::reset(
+                $request->only('email', 'password', 'password_confirmation', 'token'),
+                function ($user, $password) {
+                    $user->forceFill([
+                        'password' => Hash::make($password)
+                    ])->save();
+
+                    JWTAuth::invalidate(JWTAuth::getToken());
+                }
+            );
+
+            return response()->json([
+                'success' => $status === Password::PASSWORD_RESET,
+                'message' => __($status),
+                'data' => [
+                    'email' => $request->email
+                ]
+            ], $status === Password::PASSWORD_RESET ? 200 : 400);
+        } catch (\Exception $e) {
+            Log::error('Password reset failed: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Password reset failed'
+            ], 500);
+        }
+    }
     public function verifyEmail($email, $token) {}
 }
