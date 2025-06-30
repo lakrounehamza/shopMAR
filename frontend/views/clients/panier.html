@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panier - TechStore</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50">
+  <!-- Top Bar -->
+  <div class="bg-gradient-to-r from-gray-900 to-gray-800 text-white text-sm py-2 px-4">
+    <div class="flex justify-between items-center max-w-7xl mx-auto">
+      <div class="flex items-center space-x-6">
+        <div class="flex items-center space-x-2">
+          <i class="fas fa-clock text-blue-400"></i>
+          <span>Lun - Ven: 9h00 - 18h00</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <i class="fas fa-map-marker-alt text-blue-400"></i>
+          <span>Visitez notre showroom - 1234 Rue de la Tech, Casablanca</span>
+        </div>
+      </div>
+      <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-2">
+          <i class="fas fa-phone text-green-400"></i>
+          <span>+212 522 123 456</span>
+        </div>
+        <div class="flex space-x-3">
+          <i class="fab fa-facebook hover:text-blue-400 cursor-pointer transition-colors"></i>
+          <i class="fab fa-instagram hover:text-pink-400 cursor-pointer transition-colors"></i>
+          <i class="fab fa-twitter hover:text-blue-300 cursor-pointer transition-colors"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Navbar -->
+  <nav class="bg-white shadow sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <!-- Logo -->
+      <a href="index.html" class="flex items-center space-x-2">
+        <div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center rounded">
+          <i class="fas fa-bolt text-white text-sm"></i>
+        </div>
+        <span class="font-bold text-lg text-gray-800">TechStore</span>
+      </a>
+
+      <!-- Menu -->
+      <ul class="hidden md:flex items-center space-x-6 text-sm font-medium text-gray-700">
+        <li><a href="index.html" class="hover:text-blue-600 transition">Accueil</a></li>
+        <li><a href="#" class="hover:text-blue-600 transition">Produits</a></li>
+        <li><a href="#" class="hover:text-blue-600 transition">Contact</a></li>
+        <li><a href="#" class="hover:text-blue-600 transition">Panier</a></li>
+        <li>
+          <a href="#" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+            Connexion
+          </a>
+        </li>
+      </ul>
+
+      <!-- Burger menu mobile (optionnel à ajouter si besoin) -->
+    </div>
+  </nav>
+  <!-- Main -->
+  <main class="max-w-7xl mx-auto px-4 py-10">
+    <h2 class="text-2xl font-bold mb-6">Votre panier</h2>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Articles du panier -->
+      <div class="lg:col-span-2 space-y-6">
+
+        <!-- Produit -->
+        <div class="flex items-center border rounded-md p-4 shadow-sm relative group">
+          <img src="https://m.media-amazon.com/images/I/710KoJMG2lL._AC_SX679_.jpg" alt="Produit"
+            class="w-24 h-24 object-cover rounded" />
+
+          <div class="ml-4 flex-1">
+            <h4 class="font-semibold mb-2">MSI MEG Trident X i9, 32GB RAM, RTX 3080, 1TB SSD</h4>
+            <div class="flex justify-between items-center">
+              <span class="text-lg font-bold">4343€</span>
+              <div class="flex items-center space-x-2">
+                <input type="number" min="1" value="3" class="w-16 border rounded-md px-2 py-1 text-center" />
+                <span class="text-gray-500">13047€</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bouton Annuler -->
+          <button
+            class="absolute top-2 right-2 bg-red-600 text-white text-xs px-3 py-1 rounded hover:bg-red-700 transition">
+            Annuler
+          </button>
+        </div>
+        <div class="flex items-center border rounded-md p-4 shadow-sm relative group">
+          <img src="https://m.media-amazon.com/images/I/710KoJMG2lL._AC_SX679_.jpg" alt="Produit"
+            class="w-24 h-24 object-cover rounded" />
+
+          <div class="ml-4 flex-1">
+            <h4 class="font-semibold mb-2">MSI MEG Trident X i9, 32GB RAM, RTX 3080, 1TB SSD</h4>
+            <div class="flex justify-between items-center">
+              <span class="text-lg font-bold">4343€</span>
+              <div class="flex items-center space-x-2">
+                <input type="number" min="1" value="3" class="w-16 border rounded-md px-2 py-1 text-center" />
+                <span class="text-gray-500">13047€</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bouton Annuler -->
+          <button
+            class="absolute top-2 right-2 bg-red-600 text-white text-xs px-3 py-1 rounded hover:bg-red-700 transition">
+            Annuler
+          </button>
+        </div>
+
+
+
+        <!-- Actions -->
+        <div class="flex space-x-4 mt-4">
+          <button class="px-4 py-2 rounded-md border text-gray-700 hover:bg-gray-100">Continuer vos achats</button>
+          <button class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700">Vider le panier</button>
+          <button class="px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-900">Mettre à jour</button>
+        </div>
+      </div>
+
+      <!-- Résumé de la commande -->
+      <div class="bg-gray-50 p-6 rounded-md shadow-md space-y-6">
+        <h3 class="font-semibold text-lg">Récapitulatif</h3>
+
+        <div>
+          <p class="text-sm font-medium mb-2">Estimation des frais de livraison</p>
+          <label class="text-sm block mb-1">Pays</label>
+          <select class="w-full border px-3 py-2 rounded-md mb-3">
+            <option>Maroc</option>
+          </select>
+          <label class="text-sm block mb-1">Ville</label>
+          <input type="text" class="w-full border px-3 py-2 rounded-md mb-3" />
+          <label class="text-sm block mb-1">Code Postal</label>
+          <input type="text" class="w-full border px-3 py-2 rounded-md" />
+        </div>
+
+        <div class="text-sm text-gray-600">
+          <p><strong>Livraison Standard</strong> : 21€</p>
+          <p>Retrait en magasin : 1234 rue Tech, Casablanca</p>
+        </div>
+
+        <div>
+          <p class="text-sm font-medium mb-1">Code promo</p>
+          <input type="text" placeholder="Entrez le code" class="w-full border px-3 py-2 rounded-md mb-2" />
+          <button class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">Appliquer</button>
+        </div>
+
+        <div class="border-t pt-4 space-y-1 text-sm">
+          <div class="flex justify-between"><span>Sous-total</span><span>13047€</span></div>
+          <div class="flex justify-between"><span>Livraison</span><span>21€</span></div>
+          <div class="flex justify-between"><span>Taxes</span><span>1.61€</span></div>
+          <div class="flex justify-between font-semibold"><span>Total</span><span>13068€</span></div>
+        </div>
+
+        <div class="space-y-2">
+          <button class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">Commander</button>
+          <button class="w-full bg-yellow-400 text-black py-2 rounded-md">Payer avec PayPal</button>
+          <button class="w-full border py-2 rounded-md">Adresse multiple</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Newsletter -->
+  <section class="py-16 bg-gradient-to-r from-gray-900 to-gray-800 text-white">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+      <h2 class="text-3xl font-bold mb-4">Restez connecté avec TechStore</h2>
+      <p class="text-gray-300 mb-8">Soyez le premier informé de nos offres exclusives et nouveautés</p>
+      <div class="flex max-w-md mx-auto">
+        <input type="email" placeholder="Votre adresse email"
+          class="flex-1 px-6 py-3 rounded-l-full border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800">
+        <button
+          class="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-3 rounded-r-full hover:from-blue-700 hover:to-purple-700 transition-all font-semibold">
+          S'abonner
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-black text-gray-400 py-16 px-4">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+
+      <!-- Logo et description -->
+      <div>
+        <div class="flex items-center space-x-3 mb-6">
+          <div
+            class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center rounded-lg">
+            <i class="fas fa-bolt text-white"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white">TechStore</h3>
+        </div>
+        <p class="text-sm">Votre partenaire de confiance pour tous vos besoins technologiques.</p>
+      </div>
+
+      <!-- Informations -->
+      <div>
+        <h4 class="text-white font-semibold mb-2">Informations</h4>
+        <ul class="space-y-1 text-sm">
+          <li><a href="#" class="hover:underline">À propos de nous</a></li>
+          <li><a href="#" class="hover:underline">Politique de confidentialité</a></li>
+          <li><a href="#" class="hover:underline">Conditions</a></li>
+          <li><a href="#" class="hover:underline">Commandes et retours</a></li>
+        </ul>
+      </div>
+
+      <!-- Produits -->
+      <div>
+        <h4 class="text-white font-semibold mb-2">Composants PC</h4>
+        <ul class="space-y-1 text-sm">
+          <li><a href="#" class="hover:underline">Processeurs (CPU)</a></li>
+          <li><a href="#" class="hover:underline">Cartes graphiques</a></li>
+          <li><a href="#" class="hover:underline">RAM</a></li>
+        </ul>
+        <h4 class="text-white font-semibold mt-6 mb-2">Ordinateurs de bureau</h4>
+        <ul class="space-y-1 text-sm">
+          <li><a href="#" class="hover:underline">PC personnalisés</a></li>
+          <li><a href="#" class="hover:underline">Serveurs</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div>
+        <h4 class="text-white font-semibold mb-2">Contact</h4>
+        <p class="text-sm">1234 Adresse de la rue, Ville</p>
+        <p class="text-sm">Téléphone : 0555555555</p>
+        <p class="text-sm">Email :
+          <a href="mailto:shop@email.com" class="text-blue-400 hover:underline">
+            shop@email.com
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer bottom -->
+    <p class="text-center mt-12 text-xs text-gray-500">&copy; 2025 TechStore. Tous droits réservés.</p>
+  </footer>
+</body>
+
+</html>

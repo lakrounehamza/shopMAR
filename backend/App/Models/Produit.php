@@ -12,4 +12,8 @@ class Produit extends Model
     {
         return $this->belongsTo(Category::class);
     }
+    public function typeProduits()
+    {
+        return $this->hasMany(TypeProduit::class);
+    }
 }

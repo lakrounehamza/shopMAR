@@ -12,4 +12,12 @@ class Livreur extends User
     'zoneTravail',
     'disponible',
     ];
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user');
+    }
+    public function livraisons()
+    {
+        return $this->hasMany(Livraison::class, 'id_livreur');
+    }
 }
