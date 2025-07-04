@@ -17,4 +17,8 @@ class TypeProduit extends Model
     {
         return $this->hasMany(Produit::class);
     }
+        public function commandeItems()
+    {
+        return $this->hasMany(CommandeItem::class);
+    }
 }

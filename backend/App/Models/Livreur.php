@@ -14,10 +14,10 @@ class Livreur extends User
     ];
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_user');
+        return $this->belongsTo(User::class);
     }
     public function livraisons()
     {
-        return $this->hasMany(Livraison::class, 'id_livreur');
+        return $this->hasMany(Livraison::class);
     }
 }

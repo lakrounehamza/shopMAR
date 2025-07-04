@@ -17,4 +17,13 @@ class Commande extends Model
     {
         return $this->belongsTo(Client::class);
     }
+    
+    public function commandeItems()
+    {
+        return $this->hasMany(CommandeItem::class);
+    }
+        public function livraison()
+    {
+        return $this->hasOne(Livraison::class);
+    }
 }
