@@ -3,47 +3,67 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Repositories\Interfaces\CommandeItemRepositoryInterface;
+use App\Http\Requests\CreateCommandeItemRequest;
+use App\Http\Requests\UpdateCommandeItemRequest;
 
 class CommandeItemController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $repository;
+
+    public function __construct(CommandeItemRepositoryInterface $repository)
+    {
+        $this->repository = $repository;
+    }
+
     public function index()
     {
-        //
+        return $this->repository->getAll();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(CreateCommandeItemRequest $request)
     {
-        //
+        return $this->repository->create($request);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        return $this->repository->getById($id);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(UpdateCommandeItemRequest $request, $id)
     {
-        //
+        return $this->repository->update($id, $request);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        return $this->repository->delete($id);
     }
+
+    public function getByCommandeId($commandeId)
+    {
+        return $this->repository->getByCommandeId($commandeId);
+    }
+
+    public function getByProduitId($produitId)
+    {
+        return $this->repository->getByProduitId($produitId);
+    }
+
+    public function getByTypeProduitId($typeProduitId)
+    {
+        return $this->repository->getByTypeProduitId($typeProduitId);
+    }
+
+    public function getByCategoryId($categoryId)
+    {
+        return $this->repository->getByCategoryId($categoryId);
+    }
+
+    public function getByCategoryName($categoryName)
+    {
+        return $this->repository->getByCategoryName($categoryName);
+    }
+    
 }
