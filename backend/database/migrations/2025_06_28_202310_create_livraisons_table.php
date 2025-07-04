@@ -12,8 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('livraisons', function (Blueprint $table) {
-            $table->id();
+             $table->id();
+            $table->unsignedBigInteger('commande_id');
+            $table->unsignedBigInteger('livreur_id');
+            $table->dateTime('date_livraison')->nullable();
+            $table->enum('statut', ['EN_COURS', 'LIVREE', 'ANNULEE'])->default('EN_COURS');
             $table->timestamps();
+            $table->foreign('commande_id')->references('id')->on('commandes')->onDelete('cascade');
+            $table->foreign('livreur_id')->references('id')->on('livreurs')->onDelete('cascade');
+       
         });
     }
 
