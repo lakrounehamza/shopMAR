@@ -6,23 +6,17 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class CreateCommandeItemRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
+    public function authorize()
     {
-        return false;
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
-    public function rules(): array
+    public function rules()
     {
         return [
-            //
+            'commande_id'      => 'required|integer|exists:commandes,id',
+            'type_produit_id'  => 'required|integer|exists:type_produits,id',
+            'quantity'         => 'required|integer|min:1',
         ];
     }
 }

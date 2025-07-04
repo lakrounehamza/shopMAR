@@ -11,7 +11,7 @@ class UpdateCommandeItemRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,9 @@ class UpdateCommandeItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'commande_id'      => 'required|integer|exists:commandes,id',
+            'type_produit_id'  => 'required|integer|exists:type_produits,id',
+            'quantity'         => 'required|integer|min:1',
         ];
     }
 }
