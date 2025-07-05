@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cordes - Tableau de Bord Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'cordes-blue': '#3B82F6',
+                        'cordes-dark': '#1E40AF',
+                        'cordes-accent': '#6366F1',
+                        'cordes-light': '#EFF6FF'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #3B82F6, #6366F1);
+            color: white;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3B82F6, #6366F1);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #DEF7EC;
+            color: #047857;
+        }
+
+        .status-inactive {
+            background: #FEF2F2;
+            color: #DC2626;
+        }
+
+        .status-pending {
+            background: #FEF3C7;
+            color: #D97706;
+        }
+
+        .status-delivered {
+            background: #DEF7EC;
+            color: #047857;
+        }
+
+        .status-processing {
+            background: #DBEAFE;
+            color: #1D4ED8;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-cordes-light via-white to-blue-50 min-h-screen">
+    <!-- Sidebar -->
+    <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white/90 backdrop-blur-xl shadow-2xl border-r border-white/20">
+        <div class="flex items-center justify-center h-16 border-b border-gray-200">
+            <div class="flex items-center space-x-2">
+                <div
+                    class="w-8 h-8 bg-gradient-to-br from-cordes-blue to-cordes-accent rounded-lg flex items-center justify-center">
+                    <i class="fas fa-crown text-white text-sm"></i>
+                </div>
+                <h1
+                    class="text-xl font-bold bg-gradient-to-r from-cordes-blue to-cordes-accent bg-clip-text text-transparent">
+                    Cordes
+                </h1>
+            </div>
+        </div>
+
+        <nav class="mt-8 px-4 space-y-2">
+            <a href="#"
+                class="nav-link active flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:bg-gray-50"
+                onclick="showSection('dashboard')">
+                <i class="fas fa-home text-lg"></i>
+                <span class="font-medium">Tableau de Bord</span>
+            </a>
+            <a href="#"
+                class="nav-link flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:bg-gray-50"
+                onclick="showSection('users')">
+                <i class="fas fa-users text-lg"></i>
+                <span class="font-medium">Utilisateurs</span>
+            </a>
+            <a href="#"
+                class="nav-link flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:bg-gray-50"
+                onclick="showSection('products')">
+                <i class="fas fa-box text-lg"></i>
+                <span class="font-medium">Produits</span>
+            </a>
+            <a href="#"
+                class="nav-link flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:bg-gray-50"
+                onclick="showSection('categories')">
+                <i class="fas fa-tags text-lg"></i>
+                <span class="font-medium">Catégories</span>
+            </a>
+            <a href="#"
+                class="nav-link flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:bg-gray-50"
+                onclick="showSection('orders')">
+                <i class="fas fa-shopping-cart text-lg"></i>
+                <span class="font-medium">Commandes</span>
+            </a>
+            <a href="#"
+                class="nav-link flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:bg-gray-50"
+                onclick="showSection('analytics')">
+                <i class="fas fa-chart-line text-lg"></i>
+                <span class="font-medium">Statistiques</span>
+            </a>
+            <a href="#"
+                class="nav-link flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:bg-gray-50"
+                onclick="showSection('settings')">
+                <i class="fas fa-cog text-lg"></i>
+                <span class="font-medium">Paramètres</span>
+            </a>
+        </nav>
+
+        <div class="absolute bottom-4 left-4 right-4">
+            <div class="bg-gradient-to-r from-cordes-blue to-cordes-accent rounded-xl p-4 text-white">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <p class="font-medium">Admin</p>
+                        <p class="text-sm opacity-75">admin@cordes.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-64">
+        <!-- Header -->
+        <header class="bg-white/80 backdrop-blur-sm shadow-sm border-b border-white/20 sticky top-0 z-40">
+            <div class="flex items-center justify-between px-6 py-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Tableau de Bord</h1>
+                    <p class="text-gray-600">Bienvenue dans votre interface d'administration</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="relative p-2 text-gray-600 hover:text-cordes-blue transition-colors">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span
+                            class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">3</span>
+                    </button>
+                    <button class="p-2 text-gray-600 hover:text-cordes-blue transition-colors">
+                        <i class="fas fa-search text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Sections -->
+        <main class="p-6">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="section active">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div
+                        class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Revenus Total</p>
+                                <p class="text-3xl font-bold text-gray-900 mt-2">48,291€</p>
+                                <div class="flex items-center mt-2">
+                                    <span class="text-green-600 text-sm font-medium flex items-center">
+                                        <i class="fas fa-arrow-up mr-1"></i>12%
+                                    </span>
+                                    <span class="text-gray-500 text-sm ml-2">vs mois dernier</span>
+                                </div>
+                            </div>
+                            <div
+                                class="w-12 h-12 bg-gradient-to-br from-cordes-blue to-cordes-accent rounded-xl flex items-center justify-center shadow-lg">
+                                <i class="fas fa-euro-sign text-white text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Utilisateurs</p>
+                                <p class="text-3xl font-bold text-gray-900 mt-2">15,847</p>
+                                <div class="flex items-center mt-2">
+                                    <span class="text-green-600 text-sm font-medium flex items-center">
+                                        <i class="fas fa-arrow-up mr-1"></i>8%
+                                    </span>
+                                    <span class="text-gray-500 text-sm ml-2">vs mois dernier</span>
+                                </div>
+                            </div>
+                            <div
+                                class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                                <i class="fas fa-users text-white text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Commandes</p>
+                                <p class="text-3xl font-bold text-gray-900 mt-2">2,847</p>
+                                <div class="flex items-center mt-2">
+                                    <span class="text-green-600 text-sm font-medium flex items-center">
+                                        <i class="fas fa-arrow-up mr-1"></i>15%
+                                    </span>
+                                    <span class="text-gray-500 text-sm ml-2">vs mois dernier</span>
+                                </div>
+                            </div>
+                            <div
+                                class="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
+                                <i class="fas fa-shopping-cart text-white text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Produits</p>
+                                <p class="text-3xl font-bold text-gray-900 mt-2">1,247</p>
+                                <div class="flex items-center mt-2">
+                                    <span class="text-green-600 text-sm font-medium flex items-center">
+                                        <i class="fas fa-arrow-up mr-1"></i>5%
+                                    </span>
+                                    <span class="text-gray-500 text-sm ml-2">vs mois dernier</span>
+                                </div>
+                            </div>
+                            <div
+                                class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+                                <i class="fas fa-box text-white text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <div
+                        class="lg:col-span-2 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Analyse des Revenus</h3>
+                                <p class="text-gray-600 text-sm">Aperçu mensuel des revenus</p>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button
+                                    class="px-4 py-2 text-sm bg-gradient-to-r from-cordes-blue to-cordes-accent text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200">6M</button>
+                                <button
+                                    class="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-xl transition-all duration-200">1A</button>
+                            </div>
+                        </div>
+                        <div class="h-80">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900">Top Produits</h3>
+                            <button
+                                class="text-cordes-blue hover:text-cordes-dark text-sm font-medium transition-colors">Voir
+                                Tout</button>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-4 p-3 rounded-xl hover:bg-gray-50 transition-colors">
+                                <div
+                                    class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-mobile-alt text-white"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-medium text-gray-900">iPhone 15 Pro</p>
+                                    <p class="text-sm text-gray-600">Électronique</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-semibold text-gray-900">1,299€</p>
+                                    <p class="text-sm text-green-600">+12%</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-4 p-3 rounded-xl hover:bg-gray-50 transition-colors">
+                                <div
+                                    class="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-800 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-laptop text-white"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-medium text-gray-900">MacBook Pro</p>
+                                    <p class="text-sm text-gray-600">Ordinateurs</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-semibold text-gray-900">2,499€</p>
+                                    <p class="text-sm text-green-600">+8%</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-4 p-3 rounded-xl hover:bg-gray-50 transition-colors">
+                                <div
+                                    class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-headphones text-white"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-medium text-gray-900">AirPods Pro</p>
+                                    <p class="text-sm text-gray-600">Audio</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-semibold text-gray-900">249€</p>
+                                    <p class="text-sm text-green-600">+15%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Section -->
+            <div id="users-section" class="section">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Gestion des Utilisateurs</h2>
+                        <p class="text-gray-600">Gérer tous les utilisateurs de la plateforme</p>
+                    </div>
+                    <button class="btn-primary" onclick="openUserModal()">
+                        <i class="fas fa-plus mr-2"></i>Ajouter Utilisateur
+                    </button>
+                </div>
+
+                <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 overflow-hidden">
+                    <div class="p-6 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-900">Liste des Utilisateurs</h3>
+                            <div class="flex space-x-3">
+                                <button
+                                    class="px-4 py-2 text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
+                                    <i class="fas fa-filter mr-2"></i>Filtrer
+                                </button>
+                                <button
+                                    class="px-4 py-2 text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
+                                    <i class="fas fa-download mr-2"></i>Exporter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
+                                <tr>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Utilisateur</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Email</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Rôle</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Statut</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Inscription</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="usersTable">
+                                <!-- Users will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Section -->
+            <div id="products-section" class="section">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Gestion des Produits</h2>
+                        <p class="text-gray-600">Gérer le catalogue de produits</p>
+                    </div>
+                    <button class="btn-primary" onclick="openProductModal()">
+                        <i class="fas fa-plus mr-2"></i>Ajouter Produit
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="productsGrid">
+                    <!-- Products will be populated here -->
+                </div>
+            </div>
+
+            <!-- Categories Section -->
+            <div id="categories-section" class="section">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Gestion des Catégories</h2>
+                        <p class="text-gray-600">Organiser les produits par catégories</p>
+                    </div>
+                    <button class="btn-primary" onclick="openCategoryModal()">
+                        <i class="fas fa-plus mr-2"></i>Ajouter Catégorie
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="categoriesGrid">
+                    <!-- Categories will be populated here -->
+                </div>
+            </div>
+
+            <!-- Orders Section -->
+            <div id="orders-section" class="section">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Gestion des Commandes</h2>
+                        <p class="text-gray-600">Suivre et gérer toutes les commandes</p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button
+                            class="px-4 py-2 text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-filter mr-2"></i>Filtrer
+                        </button>
+                        <button
+                            class="px-4 py-2 text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-download mr-2"></i>Exporter
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
+                                <tr>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Commande</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Client</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Date</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Montant</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Statut</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="ordersTable">
+                                <!-- Orders will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div id="analytics-section" class="section">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Statistiques Avancées</h2>
+                    <p class="text-gray-600">Analyse détaillée des performances</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Ventes par Catégorie</h3>
+                        <div class="h-80">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Évolution des Utilisateurs</h3>
+                        <div class="h-80">
+                            <canvas id="usersChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Taux de Conversion</h3>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-cordes-blue mb-2">3.2%</div>
+                            <div class="text-sm text-gray-600">Visiteurs → Acheteurs</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Panier Moyen</h3>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-green-600 mb-2">127€</div>
+                            <div class="text-sm text-gray-600">Par commande</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Temps de Réponse</h3>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-purple-600 mb-2">2.3s</div>
+                            <div class="text-sm text-gray-600">Chargement moyen</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="settings-section" class="section">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Paramètres</h2>
+                    <p class="text-gray-600">Configurer les paramètres de la plateforme</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Paramètres Généraux</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Nom de la Plateforme</label>
+                                <input type="text" value="Cordes Admin"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cordes-blue focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Email de Contact</label>
+                                <input type="email" value="admin@cordes.com"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cordes-blue focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Langue par Défaut</label>
+                                <select
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cordes-blue focus:border-transparent">
+                                    <option value="fr">Français</option>
+                                    <option value="en">English</option>
+                                    <option value="es">Español</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Fuseau Horaire</label>
+                                <select
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cordes-blue focus:border-transparent">
+                                    <option value="Europe/Paris">Europe/Paris (CET)</option>
+                                    <option value="Europe/London">Europe/London (GMT)</option>
+                                    <option value="America/New_York">America/New_York (EST)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Paramètres de Sécurité</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium text-gray-900">Authentification à deux facteurs</p>
+                                    <p class="text-sm text-gray-600">Sécuriser votre compte avec 2FA</p>
+                                </div>
+                                <button
+                                    class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-cordes-blue transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-cordes-blue focus:ring-offset-2">
+                                    <span
+                                        class="translate-x-5 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium text-gray-900">Notifications par Email</p>
+                                    <p class="text-sm text-gray-600">Recevoir des alertes de sécurité</p>
+                                </div>
+                                <button
+                                    class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-cordes-blue transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-cordes-blue focus:ring-offset-2">
+                                    <span
+                                        class="translate-x-5 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+                                </button>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Durée de Session
+                                    (minutes)</label>
+                                <input type="number" value="60"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cordes-blue focus:border-transparent">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Paramètres de Paiement</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Devise par Défaut</label>
+                                <select
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cordes-blue focus:border-transparent">
+                                    <option value="EUR">EUR (€)</option>
+                                    <option value="USD">USD ($)</option>
+                                    <option value="GBP">GBP (£)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Commission (%)</label>
+                                <input type="number" value="5" step="0.1"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cordes-blue focus:border-transparent">
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium text-gray-900">Paiements Automatiques</p>
+                                    <p class="text-sm text-gray-600">Traitement automatique des paiements</p>
+                                </div>
+                                <button
+                                    class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-cordes-blue transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-cordes-blue focus:ring-offset-2">
+                                    <span
+                                        class="translate-x-5 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Paramètres de Notifications</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium text-gray-900">Nouvelles Commandes</p>
+                                    <p class="text-sm text-gray-600">Notifications pour nouvelles commandes</p>
+                                </div>
+                                <button
+                                    class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-cordes-blue transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-cordes-blue focus:ring-offset-2">
+                                    <span
+                                        class="translate-x-5 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium text-gray-900">Nouveaux Utilisateurs</p>
+                                    <p class="text-sm text-gray-600">Notifications pour nouveaux utilisateurs</p>
+                                </div>
+                                <button
+                                    class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-cordes-blue transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-cordes-blue focus:ring-offset-2">
+                                    <span
+                                        class="translate-x-5 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium text-gray-900">Rapports Hebdomadaires</p>
+                                    <p class="text-sm text-gray-600">Rapports de performance hebdomadaires</p>
+                                </div>
+                                <button
+                                    class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-cordes-blue focus:ring-offset-2">
+                                    <span
+                                        class="translate-x-0 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-end space-x-4">
+                    <button
+                        class="px-6 py-2 text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
+                        Annuler
+                    </button>
+                    <button class="btn-primary">
+                        Enregistrer les Paramètres
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- User Modal -->
+    <div id="userModal" class="modal">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-gray-900">Ajouter un Utilisateur</h3>
+                <button onclick="closeUserModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="userForm">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nom Complet</label>
+                        <input type="text" id="userName" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cordes-blue focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="userEmail" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cordes-blue focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Rôle</label>
+                        <select id="userRole"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cordes-blue focus:border-transparent">
+                            <option value="user">Utilisateur</option>
+                            <option value="admin">Administrateur</option>
+                            <option value="moderator">Modérateur</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" onclick="closeUserModal()"
+                        class="px-4 py-2 text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
+                        Annuler
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        Ajouter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="modal">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-gray-900">Ajouter un Produit</h3>
+                <button onclick="closeProductModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="productForm">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nom du Produit</label>
+                        <input type="text" id="productName" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cordes-blue focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Prix (€)</label>
+                        <input type="number" id="productPrice" required step="0.01"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cordes-blue focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Catégorie</label>
+                        <select id="productCategory"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cordes-blue focus:border-transparent">
+                            <option value="electronics">Électronique</option>
+                            <option value="clothing">Vêtements</option>
+                            <option value="books">Livres</option>
+                            <option value="home">Maison</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Stock</label>
+                        <input type="number" id="productStock" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cordes-blue focus:border-transparent">
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" onclick="closeProductModal()"
+                        class="px-4 py-2 text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
+                        Annuler
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        Ajouter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div id="categoryModal" class="modal">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-gray-900">Ajouter une Catégorie</h3>
+                <button onclick="closeCategoryModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="categoryForm">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nom de la Catégorie</label>
+                        <input type="text" id="categoryName" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cordes-blue focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <textarea id="categoryDescription" rows="3"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cordes-blue focus:border-transparent"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Icône</label>
+                        <select id="categoryIcon"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cordes-blue focus:border-transparent">
+                            <option value="fas fa-mobile-alt">Mobile</option>
+                            <option value="fas fa-laptop">Ordinateur</option>
+                            <option value="fas fa-tshirt">Vêtements</option>
+                            <option value="fas fa-book">Livre</option>
+                            <option value="fas fa-home">Maison</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" onclick="closeCategoryModal()"
+                        class="px-4 py-2 text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
+                        Annuler
+                    </button>
+                    <button type="submit" onclick="addCategory()" class="btn-primary">
+                        Ajouter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../../src/js/admin/dashboard.js"></script>
+</body>
+
+</html>
